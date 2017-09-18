@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gitgraph.js/1.11.4/gitgraph.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/gitgraph.js/1.11.4/gitgraph.css" />
+<head>
+    <meta charset="utf-8">
+    <title>Flujo de trabajo GIT para IQSAT</title>
+</head>
+<body>
+
+    <p><h1>Modelo de flujo de trabajo en repositorios de IQSAT</h1></p>
+    <!--http://gitgraphjs.com/
+    <canvas id="gitGraph"></canvas>-->
+    <canvas id="gitGraph" style="display:none;"></canvas>
+    <img id="canvasImg" alt="Right click to save me!">
+    <script src="FlujoIQSAT.js"></script>
+    <script>
+        var canvas = document.getElementById('gitGraph');
+        
+        var dataURL = canvas.toDataURL();
+        document.getElementById('canvasImg').src = dataURL;
+    </script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gitgraph.js/1.11.4/gitgraph.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/gitgraph.js/1.11.4/gitgraph.css" />
+<head>
+    <meta charset="utf-8">
+    <title>Flujo de trabajo GIT para IQCM</title>
+    <style type="text/css">
+        canvas {
+            position: relative;
+            padding: 1em;
+        }
+    </style>
+</head>
+<body>
+
+    <p><h1>Modelo de flujo de trabajo en repositorio de IQCM</h1></p>
+    <!--http://gitgraphjs.com/-->
+    <canvas id="gitGraph"></canvas>
+    <script>
+    var graphConfig = new GitGraph.Template({
+    branch: {
+        color: "#000000",
+        lineWidth: 3,
+        spacingX: 60,
+        mergeStyle: "straight",
+        showLabel: true,                // display branch names on graph
+        labelFont: "normal 10pt Arial",
+        labelRotation: 0
+    },
+    commit: {
+        spacingY: -30,
+        dot: {
+            size: 8,
+            strokeColor: "#000000",
+            strokeWidth: 4
+        },
+        tag: {
+            font: "normal 10pt Arial",
+            color: "yellow"
+        },
+        message: {
+            color: "black",
+            font: "normal 12pt Arial",
+            displayAuthor: false,
+            displayBranch: false,
+            displayHash: false,
+        }
+    },
+    arrow: {
+        size: 8,
+        offset: 3
+    }
+});
+
+var config = {
+  template: graphConfig,
+  mode: "extended",
+  orientation: "horizontal"
+};
+
+var gitgraph = new GitGraph(config);
+gitgraph.template.commit.tag.spacingY = -20;
+
+var uatCol = 0;
+var devCol = 1;
+var masterCol = 2;
+var soporteCol = 3;
+
+var master = gitgraph.branch({name: "master", column: masterCol })
+  .commit({ message: "Creación del repositorio. Centralizador de cóidgo hace el commit inicial." })
+
+var dev = gitgraph.branch({ parentBranch: master, name: "DSR-MULTINSTITUCION", column: devCol })
+  .commit({ message: "Ramas de desarrollo. Centralizador de código debe crear.", detailId: "detalle-dev1"});
+
+dev.checkout();
+
+gitgraph.commit();
+ 
+var uat = gitgraph.branch({ parentBranch: dev, name: "UAT-MULTINSTITUCION", column: uatCol })
+  .commit();
+
+uat.checkout();
+
+dev.checkout();
+gitgraph.commit();
+uat.merge(dev);
+
+uat.checkout();
+gitgraph.commit({tag: "v3.1.0", dotStrokeWidth: 10})
+uat.merge(master);
+master.merge(dev);
+
+var soporte = gitgraph.branch({ parentBranch: master, name: "SOPORTE-v3.1.0", column: soporteCol })
+  .commit();
+
+
+dev.checkout();
+gitgraph.commit();
+dev.merge(uat);
+
+soporte.checkout();
+gitgraph.commit();
+soporte.merge(master);
+master.merge(dev);
+
+dev.checkout();
+gitgraph.commit();
+
+
+
+    </script>
+</body>
+</html>
